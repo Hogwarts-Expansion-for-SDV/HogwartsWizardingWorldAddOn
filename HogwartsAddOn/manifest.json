@@ -1,7 +1,7 @@
 {
   "Name": "Hogwarts Add-On",
   "Author": "Hogwarts Expansion Team",
-  "Version": "0.2.0",
+  "Version": "0.1.0",
   "Description": "Adds miscellaneous things to the Hogwarts Expansion using Harmony",
   "UniqueID": "HogwartsET.AddOn.Hogwarts",
   "MinimumApiVersion": "4.0",
