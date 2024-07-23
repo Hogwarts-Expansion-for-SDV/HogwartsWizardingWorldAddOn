@@ -1,11 +1,12 @@
 ﻿using HogwartsAddOn.Models;
-using StardewModdingAPI;
 using Microsoft.Xna.Framework;
+using StardewModdingAPI;
 
 namespace HogwartsAddOn.Settings
 {
     internal static class InternalSettings
     {
+        internal static string? ModId => (InternalSettings.Settings is not CPFile settings || string.IsNullOrWhiteSpace(settings.ModId)) ? null : settings.ModId;
         internal static CPFile? Settings { get; set; }
         internal static CategoryInfo? Category { get; set; }
         internal static Dictionary<string, WarpTotem> WarpTotems { get; set; } = new();
@@ -24,20 +25,18 @@ namespace HogwartsAddOn.Settings
             {
                 if (Context.IsWorldReady) Logger.LogOnce("Couldn't find a valid settings file from the CP mod. The mod is disabled until this is fixed.", LogLevel.Trace);
                 return;
-            };
+            }
             Settings = settings;
             Logger.Trace("Successfully loaded settings from {0}", Settings.ModId);
-            if (Settings.FeatureToggles.CategoryRecolor == true || Settings.FeatureToggles.CategoryRenaming == true)
-            {
-                if (Settings.EditCategories is not null) Category = new(Settings.ModId, Settings.EditCategories);
-            }
-            if (Settings.FeatureToggles.WarpTotems == true && Settings.WarpTotems is not null)
+            if ((Settings.FeatureToggles.CategoryRecolor || Settings.FeatureToggles.CategoryRenaming) && Settings.EditCategories is not null)
+                Category = new(Settings.ModId, Settings.EditCategories);
+            if (Settings.FeatureToggles.WarpTotems && Settings.WarpTotems is not null)
             {
                 WarpTotems = new();
                 foreach (KeyValuePair<string, WarpTotemInfo> keyValuePair in Settings.WarpTotems)
                 {
                     if (keyValuePair.Value.MapName is null) continue;
-                    WarpTotem totem = new WarpTotem(keyValuePair.Value.MapName, keyValuePair.Value.X, keyValuePair.Value.Y, GetColorFromList(keyValuePair.Value.Color));
+                    WarpTotem totem = new(keyValuePair.Value.MapName, keyValuePair.Value.X, keyValuePair.Value.Y, GetColorFromList(keyValuePair.Value.Color));
                     WarpTotems.Add(keyValuePair.Key, totem);
                 }
             }

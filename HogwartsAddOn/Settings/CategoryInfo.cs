@@ -1,9 +1,7 @@
-﻿using StardewModdingAPI;
-using HogwartsAddOn.Models;
+﻿using HogwartsAddOn.Models;
 using Microsoft.Xna.Framework;
 using StardewValley;
 using StardewValley.GameData.Objects;
-using StardewValley.Tools;
 
 namespace HogwartsAddOn.Settings
 {
@@ -82,7 +80,7 @@ namespace HogwartsAddOn.Settings
             data.CustomFields.TryGetValue(CPModId + "/CategoryName", out string? categoryName);
             data.CustomFields.TryGetValue(CPModId + "/CategoryColor", out string? categoryColor);
             info.Name = categoryName ?? string.Empty;
-            info.Color = categoryColor?.Split(",")?.Select(int.Parse)?.ToList();
+            info.Color = categoryColor?.Split(",").Select(int.Parse).ToList();
             return info;
         }
     }
