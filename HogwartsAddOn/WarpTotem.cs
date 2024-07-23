@@ -1,9 +1,7 @@
-﻿using StardewValley;
+﻿using HogwartsAddOn.Settings;
 using Microsoft.Xna.Framework;
-using xTile.Dimensions;
-using StardewValley.Extensions;
 using StardewModdingAPI;
-using HogwartsAddOn.Settings;
+using StardewValley;
 
 namespace HogwartsAddOn
 {
@@ -16,7 +14,8 @@ namespace HogwartsAddOn
 
         internal StardewValley.Object? Object { get; set; }
 
-        internal WarpTotem(string mapName, int x, int y, Color? color) { 
+        internal WarpTotem(string mapName, int x, int y, Color? color)
+        {
             MapName = mapName;
             XCoordinate = x;
             YCoordinate = y;
@@ -46,14 +45,11 @@ namespace HogwartsAddOn
 
         private static bool CanWarp(StardewValley.Object? obj)
         {
-            if (obj is null) return false;
-            if (!Game1.player.canMove || obj.isTemporarilyInvisible) return false;
-            if (obj.Category != 0) return false;
             if (InternalSettings.Settings is null || InternalSettings.Settings.ModId == string.Empty || InternalSettings.Settings.WarpTotems is null) return false;
-            if (!obj.ItemId.StartsWith(InternalSettings.Settings.ModId)) return false;
-            if (!obj.HasContextTag("totem_item")) return false;
+            if (obj is null || obj.isTemporarilyInvisible || obj.Category != 0) return false;
+            if (!obj.ItemId.StartsWith(InternalSettings.Settings.ModId) || !obj.HasContextTag("totem_item")) return false;
             if (Game1.eventUp || Game1.isFestival() || Game1.fadeToBlack) return false;
-            if (Game1.player.swimming.Value || Game1.player.bathingClothes.Value || Game1.player.onBridge.Value) return false;
+            if (!Game1.player.canMove || Game1.player.swimming.Value || Game1.player.bathingClothes.Value || Game1.player.onBridge.Value) return false;
             return true;
         }
 
@@ -70,7 +66,9 @@ namespace HogwartsAddOn
 
         private static TemporaryAnimatedSprite CreateSprite(int index, string itemId)
         {
-            float x = index == 0 ? 0f : index == 1 ? -64f : 64f;
+            float x;
+            if (index == 0) x = 0f;
+            else x = index == 1 ? -64f : 64f;
             float multiplier = index == 0 ? 1f : 0.5f;
             TemporaryAnimatedSprite sprite = new(0, 9999f, 1, 999, Game1.player.Position + new Vector2(x, -96f), flicker: false, flipped: false, verticalFlipped: false, 0f)
             {
@@ -97,7 +95,7 @@ namespace HogwartsAddOn
             Game1.player.FarmerSprite.animateOnce(new FarmerSprite.AnimationFrame[2]
             {
                         new(57, 2000, secondaryArm: false, flip: false),
-                        
+
                         new((short)Game1.player.FarmerSprite.CurrentFrame, 0, secondaryArm: false, flip: false, endOfAnimationBehavior, behaviorAtEndOfFrame: true)
             });
             AnimateStartOfWarp(location, obj.QualifiedItemId);
