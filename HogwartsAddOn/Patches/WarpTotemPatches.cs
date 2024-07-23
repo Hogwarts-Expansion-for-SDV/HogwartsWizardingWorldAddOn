@@ -1,11 +1,23 @@
-﻿using HogwartsAddOn.Settings;
+﻿using HarmonyLib;
+using HogwartsAddOn.Settings;
 using StardewModdingAPI;
 using StardewValley;
 
 namespace HogwartsAddOn.Patches
 {
-    internal class WarpTotemPatches
+    internal static class WarpTotemPatches
     {
+        internal static void Patch(Harmony harmony)
+        {
+            harmony.Patch(
+                original: AccessTools.Method(type: typeof(StardewValley.Object), name: nameof(StardewValley.Object.performUseAction)),
+                postfix: new HarmonyMethod(typeof(WarpTotemPatches), nameof(WarpTotemPatches.PerformUseAction_PostFix))
+                );
+            harmony.Patch(
+                original: AccessTools.Method(type: typeof(StardewValley.Object), name: "totemWarpForReal"),
+                postfix: new HarmonyMethod(typeof(WarpTotemPatches), nameof(WarpTotemPatches.TotemWarpForReal_PostFix))
+                );
+        }
         internal static void PerformUseAction_PostFix(StardewValley.Object __instance, GameLocation location, ref bool __result)
         {
             try
